@@ -18,4 +18,3 @@ const draw = () => {
 };
 
 export {draw};
-
