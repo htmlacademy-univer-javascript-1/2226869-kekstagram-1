@@ -51,7 +51,7 @@ const COMMENTS = [
 
 const DESCRIPTION = [
   'Машинка:)',
-  '"Над пропастью во ржи!"',
+  'Над пропастью во ржи!',
   'Просто так',
   'Что-то на непонятном)',
   'Какое чудесное небо',
@@ -59,57 +59,23 @@ const DESCRIPTION = [
   'Назад в Лето!',
 ];
 
-const getNewId = () => getRandomPositiveInteger(0, 100000);
+const NUMBER_USERS = 25;
 
-const arr25 = [];
-const arr6 = [];
-
-function getIdNumber(upperLimit) {
-  if (upperLimit === 25) {
-    do {
-      const randomNumber = getRandomPositiveInteger(1, 25);
-      if (!arr25.includes(randomNumber)) {
-        arr25.push(randomNumber);
-        return randomNumber;
-      }
-    } while (arr25.length < upperLimit);
-  } else if (upperLimit === 6) {
-    do {
-      const randomNumber = getRandomPositiveInteger(1, 6);
-      if (!arr6.includes(randomNumber)) {
-        arr6.push(randomNumber);
-        return randomNumber;
-      }
-    } while (arr6.length < upperLimit);
-  }
-}
-
-const arrID = [];
-
-function getId(upperLimit) {
-  if (upperLimit === 25) {
-    do {
-      const randomNumber = getRandomPositiveInteger(1, 25);
-      if (!arrID.includes(randomNumber)) {
-        arrID.push(randomNumber);
-        return randomNumber;
-      }
-    } while (arrID.length < upperLimit);
-  }
-}
-
-
-export const createUser = () => ({
-  id: getId(25),
-  url: `photos/${getIdNumber(25)}.jpg`,
+const createUser = () => ({
+  id: getRandomPositiveInteger(1, 25),
+  url: `photos/${getRandomPositiveInteger(1,25)}.jpg`,
   description: getRandomArrayElement(DESCRIPTION),
   likes: getRandomPositiveInteger(15, 200),
   comment: [
     {
-      id: getNewId(),
+      id: getRandomPositiveInteger(1, 100000),
       avatar: `img/avatar-${getRandomPositiveInteger(1, 6)}.svg`,
       message: getRandomArrayElement(COMMENTS),
       name: `${getRandomArrayElement(NAMES)} ${getRandomArrayElement(SURNAMES)}`
     }
   ]
 });
+
+const create = () => Array.from({length: NUMBER_USERS}, createUser);
+
+export {create, createUser};
