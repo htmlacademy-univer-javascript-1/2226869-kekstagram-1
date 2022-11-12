@@ -1,3 +1,3 @@
-import {draw} from './drawThumbnails';
+import {drawThumbnails} from './drawThumbnails';
 
-draw();
+drawThumbnails();
