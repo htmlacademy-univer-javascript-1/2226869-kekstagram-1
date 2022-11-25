@@ -1,3 +1,6 @@
-import {drawThumbnails} from './drawThumbnails';
+import {validateHashtag} from './validetion.js';
 
-drawThumbnails();
+
+// drawThumbnails();
+// eslint-disable-next-line no-console
+// console.log(create());
