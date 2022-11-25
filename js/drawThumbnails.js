@@ -1,5 +1,5 @@
-import {createUser} from './module/data';
-import {createBigPicture} from './bigPicture';
+import {createUser} from './module/data.js';
+import {createBigPicture} from './bigPicture.js';
 
 
 const userTemp = document.querySelector('#picture').content.querySelector('.picture');
