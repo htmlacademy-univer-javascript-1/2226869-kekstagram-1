@@ -34,8 +34,6 @@ export function validateHashtag(listHashtags) {
       return false;
     }
   }
-  // eslint-disable-next-line no-console
-  console.log('проверка прошла!');
   return true;
 }
 
