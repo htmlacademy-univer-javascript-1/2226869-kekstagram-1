@@ -76,6 +76,6 @@ const createUser = () => ({
   ]
 });
 
-const create = () => Array.from({length: NUMBER_USERS}, createUser);
+const photos = () => Array.from({length: NUMBER_USERS}, createUser);
 
-export {create, createUser};
+export {photos, createUser};

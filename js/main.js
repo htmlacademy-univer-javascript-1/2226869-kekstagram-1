@@ -1,6 +1,4 @@
+import {drawThumbnails} from './drawThumbnails.js';
+import {changeBigPicture} from './bigPicture.js';
 import {validateHashtag} from './validetion.js';
-
-
-// drawThumbnails();
-// eslint-disable-next-line no-console
-// console.log(create());
+import {onClick} from './module/gallary.js';
