@@ -12,9 +12,9 @@ const  numberOfComments = document.querySelector('.comments-count');
 
 const createComment = (sample, comment, dataComment) => { //создание одного комментария
   const oneComment = sample.cloneNode(true);
-  oneComment.querySelector('.social__text').textContent = dataComment['message'];
-  oneComment.querySelector('img').src = dataComment['avatar'];
-  oneComment.querySelector('img').alt = dataComment['name'];
+  oneComment.querySelector('.social__text').textContent = dataComment.message;
+  oneComment.querySelector('img').src = dataComment.avatar;
+  oneComment.querySelector('img').alt = dataComment.name;
   comment.appendChild(oneComment);
 };
 
@@ -33,11 +33,12 @@ const changeBigPicture = function (newPicture) {
   }
   comments.forEach((comment) => {
     const newComment = newCommentTemplate.cloneNode(true);
+    newComment.querySelector('.social__text').textContent = comment.message;
     newComment.querySelector('.social__picture').src = comment.avatar;
     newComment.querySelector('.social__picture').alt = comment.name;
-    newComment.querySelector('.social__text').textContent = comment.message;
 
     commentList.append(newComment);
+    // console.log(commentList);
 
     let tempCount = 0;
 
@@ -60,6 +61,7 @@ const changeBigPicture = function (newPicture) {
     }
 
     loaderComments.addEventListener('click', () => {
+      // console.log(newPicture.id);
       if(tempCount + 5 <= newPicture.comment.length) { // если мы не дошли до конца списка комментариев, то печатаем след 5
         for(let k = tempCount; k < tempCount + 5; k++){
           createComment(commentLi, commentList, newPicture.comment[k]);
@@ -70,6 +72,7 @@ const changeBigPicture = function (newPicture) {
         for (let k = tempCount; k <= newPicture.comment.length - tempCount; k++) {
           createComment(commentLi, commentList, newPicture.comment[k]);
           countComment.textContent = newPicture.comment.length.toString();
+          // tempCount = 0;
         }
         loaderComments.classList.add('hidden');
       }

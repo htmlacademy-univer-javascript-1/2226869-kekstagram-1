@@ -1,4 +1,4 @@
-import {drawThumbnails} from './drawThumbnails.js';
-import {changeBigPicture} from './bigPicture.js';
-import {validateHashtag} from './validetion.js';
-import {onClick} from './module/gallary.js';
+import './drawThumbnails.js';
+import './bigPicture.js';
+import './validetion.js';
+import './module/gallary.js';
