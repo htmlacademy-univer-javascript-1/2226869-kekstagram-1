@@ -5,17 +5,16 @@ const form = document.querySelector('.img-upload__form');
 const imgUpload = form.querySelector('[name="filename"]');
 const imgUploadOverlay = document.querySelector('.img-upload__overlay');
 const closeForm = form.querySelector('#upload-cancel');
+const submit = form.querySelector('.img-upload__submit');
 const hashtags = form.elements.hashtags;
 
 const pristine = new Pristine(form);
 
-const regExeption = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+const regExpression = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
 
-function validateLength(value) {
-  return value.length >= 2 && value.length <= 20;
-}
+const validateLength = (value) => value.length >= 2 && value.length <= 20;
 
-export function validateHashtag(listHashtags) {
+export const validateHashtag = (listHashtags) => {
   const array = listHashtags.split(' ').map((element) => element.toLowerCase());
   const set = new Set();
   if (array.length > 5) {
@@ -30,12 +29,12 @@ export function validateHashtag(listHashtags) {
     if (!validateLength(array[i])) {
       return false;
     }
-    if (!regExeption.test(array[i])) {
+    if (!regExpression.test(array[i])) {
       return false;
     }
   }
   return true;
-}
+};
 
 pristine.addValidator(
   hashtags,
@@ -50,12 +49,12 @@ const onPopupEscKeydown = (evt) => {
   }
 };
 
-function openImgUpload() {
+const openImgUpload = () => {
   imgUploadOverlay.classList.remove('hidden');
   document.addEventListener('keydown', onPopupEscKeydown);
-}
+};
 
-function closeImgUpload() {
+function closeImgUpload(){
   imgUploadOverlay.classList.add('hidden');
   document.body.classList.remove('modal-open');
   document.querySelector('#upload-file').innerHTML = '';
@@ -68,7 +67,7 @@ imgUpload.addEventListener('click', () => {
 
 closeForm.addEventListener('click', closeImgUpload);
 
-form.addEventListener('submit', (evt) => {
+submit.addEventListener('submit', (evt) => {
   evt.preventDefault();
   pristine.validate();
 });

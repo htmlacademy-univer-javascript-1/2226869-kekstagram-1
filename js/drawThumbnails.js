@@ -1,27 +1,23 @@
 import {createUser} from './module/data.js';
-import {createBigPicture} from './bigPicture.js';
+
+const photos = Array.from({length: 25}, createUser);
+
+const pictureContainer = document.querySelector('.pictures');
+const pictureTemplate = document.querySelector('#picture').content.querySelector('.picture');
 
 
-const userTemp = document.querySelector('#picture').content.querySelector('.picture');
-const pictures = document.querySelector('.pictures');
-const patternUserFragment = document.createDocumentFragment();
+const drawThumbnails = function(onClick){
+  photos.forEach((pic) => {
+    const newPicture = pictureTemplate.cloneNode(true);
+    newPicture.querySelector('img').src = pic.url;
+    newPicture.querySelector('.picture__likes').textContent = pic.likes;
+    newPicture.querySelector('.picture__comments').textContent = pic.comment.length;
 
-function createThumbnail(user) {
-  const thumbnail = userTemp.cloneNode(true);
-  thumbnail.querySelector('.picture__img').setAttribute('src', user.url);
-  const pictureInfo = thumbnail.querySelector('.picture__info');
-  pictureInfo.querySelector('.picture__comments').textContent = user.comment;
-  pictureInfo.querySelector('.picture__likes').textContent = user.likes;
-  return thumbnail;
-}
-
-const drawThumbnails = () => {
-  for (const user of createUser()) {
-    const thumbnail = createThumbnail(user);
-    createBigPicture(thumbnail, user);
-    patternUserFragment.append(thumbnail);
-  }
-  pictures.append(patternUserFragment);
+    newPicture.addEventListener('click', () =>{
+      onClick(pic);
+    });
+    pictureContainer.append(newPicture);
+  });
 };
 
 export {drawThumbnails};

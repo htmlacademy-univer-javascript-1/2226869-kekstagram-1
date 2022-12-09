@@ -1,6 +1,4 @@
-import {validateHashtag} from './validetion.js';
-
-
-// drawThumbnails();
-// eslint-disable-next-line no-console
-// console.log(create());
+import './drawThumbnails.js';
+import './bigPicture.js';
+import './validetion.js';
+import './module/gallary.js';
