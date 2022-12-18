@@ -1,157 +1,113 @@
-// кнопки изменения масштаба
-const scalePlus = document.querySelector('.scale__control--bigger');
-const scaleMinus = document.querySelector('.scale__control--smaller');
-const scaleValue = document.querySelector('.scale__control--value');
-const imgUploadPreview = document.querySelector('.img-upload__preview');
+const INITIAL_EFFECT = 'none';
 
-// радиокнопки выбора эффекта
-const radios = document.querySelector('.img-upload__effects').querySelectorAll('input[name="effect"]');
-let chousedEffect = document.querySelector('.img-upload__effects').querySelectorAll('input[name="effect"]:checked');
+const imgUploadForm = document.querySelector('.img-upload__form');
+const picture = imgUploadForm.querySelector('.img-upload__preview img');
+const effectsList = imgUploadForm.querySelector('.effects__list');
+const buttons = effectsList.querySelectorAll('.effects__radio');
+const effectLevelSlider = imgUploadForm.querySelector('.effect-level__slider');
+const effectLevelValue = imgUploadForm.querySelector('.effect-level__value');
 
-// слайдер
-const sliderElement = document.querySelector('.img-upload__effect-level').querySelector('.effect-level__slider');
-const sliderValue = document.querySelector('.effect-level__value');
+const PICTURES_EFFECTS = {
+  chrome: {
+    filter: 'grayscale',
+    range: {min: 0, max: 1.0},
+    step: 0.1,
+    measurementUnit: ''},
+  sepia: {
+    filter: 'sepia',
+    range: {min: 0, max: 1.0},
+    step: 0.1,
+    measurementUnit: ''},
+  marvin: {
+    filter: 'invert',
+    range: {min: 0, max: 100},
+    step: 1,
+    measurementUnit: '%'},
+  phobos: {
+    filter: 'blur',
+    range: {min: 0, max: 3.0},
+    step: 0.1,
+    measurementUnit: 'px'},
+  heat: {
+    filter: 'brightness',
+    range: {min: 1, max: 3.0},
+    step: 0.1,
+    measurementUnit: ''}
+};
 
+let currentEffect = INITIAL_EFFECT;
 
-sliderElement.setAttribute('disabled', true); // скрытие слайдера
-sliderValue.value = 100;
+const createEffectSlider = () => {
+  noUiSlider.create(effectLevelSlider, {
+    range: {
+      min: 0,
+      max: 1.0,
+    },
+    start: 1.0,
+    step: 0.1,
+    connect: 'lower',
+  });
+};
 
-// создание слайдера
-noUiSlider.create(sliderElement, {
-  range: {
-    min: 0,
-    max: 100,
-  },
-  start: 100,
-  step: 1,
-  connect: 'lower',
-});
-
-// проверка измениния значения слайдера
-sliderElement.noUiSlider.on('update', () => {
-  sliderValue.value = sliderElement.noUiSlider.get();
-  currentValuetEffect(chousedEffect.value, sliderValue.value);
-});
-
-// уменьшение масштаба
-scaleMinus.addEventListener('click', () => {
-  const intScale = parseInt(scaleValue.value, 10);
-  if (intScale > 25) {
-    scaleValue.value = `${intScale - 25}%`;
-    imgUploadPreview.style = `transform: scale(${parseInt(scaleValue.value, 10) / 100})`;
+const sliderConnector = () => {
+  if (currentEffect !== 'none') {
+    const effect = PICTURES_EFFECTS[currentEffect];
+    picture.style.filter = `${effect.filter}(${effectLevelSlider.noUiSlider.get()}${effect.measurementUnit})`;
+    effectLevelValue.value = `${effectLevelSlider.noUiSlider.get()}${effect.measurementUnit}`;
+  } else {
+    picture.style.filter = '';
   }
-});
+};
 
-// увеличение масштаба
-scalePlus.addEventListener('click', () => {
-  const intScale = parseInt(scaleValue.value, 10);
-  if (intScale < 100) {
-    scaleValue.value = `${intScale + 25}%`;
-    imgUploadPreview.style = `transform: scale(${parseInt(scaleValue.value, 10) / 100})`;
+const changeEffect = (effect) => {
+  if ((currentEffect === 'none') !== (effectLevelSlider.classList.contains('hidden'))){
+    effectLevelSlider.classList.toggle('hidden');
   }
-});
+  if (currentEffect !== 'none') {
+    const effectObj = PICTURES_EFFECTS[effect];
+    effectLevelSlider.noUiSlider.updateOptions({
+      range: {
+        min: effectObj.range.min,
+        max: effectObj.range.max,
+      },
+      start: effectObj.range.max,
+      step: effectObj.step
+    });
+  }
+  else {
+    picture.style.filter = '';
+  }
+};
 
-// назначение обработчиков на все радио кнопки
-radios.forEach((radio) => {
-  radio.addEventListener('input', setСhousedEffect);
-});
-
-let oldEffect = 'effects__preview--none';
-
-// yстановка нового эффекта и глубины обработки
-function setСhousedEffect() {
-  for (const radio of radios) {
-    if (radio.checked) {
-      chousedEffect = radio;
-      imgUploadPreview.classList.remove(oldEffect);
-      imgUploadPreview.classList.add(`effects__preview--${chousedEffect.value}`);
-      oldEffect = `effects__preview--${chousedEffect.value}`;
-      setScaleEffect(chousedEffect.value);
+const effectRadiosListener = () => {
+  picture.classList.remove(`effects__preview--${currentEffect}`);
+  buttons.forEach((button) => {
+    if (button.checked) {
+      currentEffect = button.value;
+      changeEffect(currentEffect);
     }
-  }
-}
+  });
+  picture.classList.add(`effects__preview--${currentEffect}`);
+};
 
-function setScaleEffect(nameEffect) {
-  if (nameEffect === 'none') {
-    sliderElement.setAttribute('disabled', true); // При выборе эффекта «Оригинал» слайдер скрывается
+export const enableEffectPreview = () => {
+  effectsList.addEventListener('click', effectRadiosListener);
+  createEffectSlider();
+  changeEffect(currentEffect);
+  effectLevelSlider.noUiSlider.set(parseFloat(effectLevelValue.value));
+  effectLevelSlider.noUiSlider.on('update', sliderConnector);
+  if (currentEffect === 'none') {
+    effectLevelSlider.classList.add('hidden');
   }
-  if (nameEffect === 'chrome') {
-    sliderElement.removeAttribute('disabled');
-    sliderElement.noUiSlider.updateOptions({
-      range: {
-        min: 0.1,
-        max: 1
-      },
-      start: 1,
-      step: 0.1
-    });
+};
 
-  }
-  if (nameEffect === 'sepia') {
-    sliderElement.removeAttribute('disabled');
-    sliderElement.noUiSlider.updateOptions({
-      range: {
-        min: 0.1,
-        max: 1
-      },
-      start: 1,
-      step: 0.1
-    });
-  }
-  if (nameEffect === 'marvin') {
-    sliderElement.removeAttribute('disabled');
-    sliderElement.noUiSlider.updateOptions({
-      range: {
-        min: 0,
-        max: 100
-      },
-      start: 100,
-      step: 1
-    });
-  }
-  if (nameEffect === 'phobos') {
-    sliderElement.removeAttribute('disabled');
-    sliderElement.noUiSlider.updateOptions({
-      range: {
-        min: 0,
-        max: 3
-      },
-      start: 3,
-      step: 0.1
-    });
+export const disableEffectPreview = () => {
+  picture.classList.remove(`effects__preview--${currentEffect}`);
+  effectsList.removeEventListener('click', effectRadiosListener);
+  effectLevelSlider.noUiSlider.destroy();
+};
 
-  }
-  if (nameEffect === 'heat') {
-    sliderElement.removeAttribute('disabled');
-    sliderElement.noUiSlider.updateOptions({
-      range: {
-        min: 1,
-        max: 3
-      },
-      start: 3,
-      step: 0.1
-    });
-  }
-}
-
-
-function currentValuetEffect(nameEffect, valueEffect) {
-  if (nameEffect === 'none') {
-    sliderElement.setAttribute('disabled', true); // При выборе эффекта «Оригинал» слайдер скрывается
-  }
-  if (nameEffect === 'chrome') {
-    imgUploadPreview.style = `filter: grayscale(${valueEffect})`;
-  }
-  if (nameEffect === 'sepia') {
-    imgUploadPreview.style = `filter: sepia(${valueEffect})`;
-  }
-  if (nameEffect === 'marvin') {
-    imgUploadPreview.style = `filter: invert(${valueEffect})`;
-  }
-  if (nameEffect === 'phobos') {
-    imgUploadPreview.style = `filter: blur(${valueEffect})`;
-  }
-  if (nameEffect === 'heat') {
-    imgUploadPreview.style = `filter: brightness(${valueEffect})`;
-  }
-}
+export const resetEffect = () => {
+  currentEffect = INITIAL_EFFECT;
+  imgUploadForm.reset();
+};
