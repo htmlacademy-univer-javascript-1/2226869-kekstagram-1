@@ -1,75 +1,68 @@
-import {isEscapeKey} from './module/util.js';
+import {checkMaxLength} from './util.js';
 
-const form = document.querySelector('.img-upload__form');
+const MAX_DESCRIPTION_LENGTH = 140;
+const MAX_HASHTAGS_LENGTH = 5;
+const REGEX = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
 
-const imgUpload = form.querySelector('[name="filename"]');
-const imgUploadOverlay = document.querySelector('.img-upload__overlay');
-const closeForm = form.querySelector('#upload-cancel');
-const submit = form.querySelector('.img-upload__submit');
-const hashtags = form.elements.hashtags;
+const imgUploadForm = document.querySelector('.img-upload__form');
+const textHashtagsInput = imgUploadForm.querySelector('.text__hashtags');
+const textDescriptionInput = imgUploadForm.querySelector('.text__description');
+const uploadFormSubmitButtonElement = imgUploadForm.querySelector('.img-upload__submit');
 
-const pristine = new Pristine(form);
+export const pristine = new Pristine(imgUploadForm, {
+  classTo: 'img-upload__field-wrapper',
+  errorClass: 'img-upload__field-wrapper--invalid',
+  successClass: 'img-upload__field-wrapper--valid',
+  errorTextParent: 'img-upload__field-wrapper',
+  errorTextTag: 'div',
+  errorTextClass: 'form__error'
+});
 
-const regExpression = /^#[A-Za-zА-Яа-яЁё0-9]{1,19}$/;
+const validateDescription = (value) => checkMaxLength(value, MAX_DESCRIPTION_LENGTH);
 
-const validateLength = (value) => value.length >= 2 && value.length <= 20;
+const validateHashtagsLength = (value) => value.split(' ').length <= MAX_HASHTAGS_LENGTH;
 
-export const validateHashtag = (listHashtags) => {
-  const array = listHashtags.split(' ').map((element) => element.toLowerCase());
-  const set = new Set();
-  if (array.length > 5) {
-    return false;
+const validateHashtagUniqueness = (value) => {
+  const hashtags = value.toLowerCase().split(' ');
+  return hashtags.length === new Set(hashtags).size;
+};
+
+const validateHashtagFormat = (value) => {
+  if (value === '') {
+    return true;
   }
-  for (let i = 0; i < array.length; i++) {
-    if (!set.has(array[i])) {
-      set.add(array[i]);
-    } else {
-      return false;
-    }
-    if (!validateLength(array[i])) {
-      return false;
-    }
-    if (!regExpression.test(array[i])) {
-      return false;
-    }
+  else {
+    return value.split(' ').every((hashtag) => REGEX.test(hashtag));
   }
-  return true;
+};
+
+export const validateForm = () => {
+  const description = textDescriptionInput.value;
+  const hashtags = textHashtagsInput.value;
+  uploadFormSubmitButtonElement.disabled = !(validateHashtagFormat(hashtags) && validateHashtagUniqueness(hashtags) &&
+    validateHashtagsLength(hashtags) && validateDescription(description));
 };
 
 pristine.addValidator(
-  hashtags,
-  validateHashtag,
-  'Hashtags are not valid'
+  textDescriptionInput,
+  validateDescription,
+  'Не более 140 символов'
 );
 
-const onPopupEscKeydown = (evt) => {
-  if (isEscapeKey(evt) && !(evt.target.matches('input') || evt.target.matches('textarea'))) {
-    evt.preventDefault();
-    closeImgUpload();
-  }
-};
+pristine.addValidator(
+  textHashtagsInput,
+  validateHashtagsLength,
+  'Не больше 5 хэштегов'
+);
 
-const openImgUpload = () => {
-  imgUploadOverlay.classList.remove('hidden');
-  document.addEventListener('keydown', onPopupEscKeydown);
-};
+pristine.addValidator(
+  textHashtagsInput,
+  validateHashtagUniqueness,
+  'Хэштеги не должны повторяться'
+);
 
-function closeImgUpload(){
-  imgUploadOverlay.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  document.querySelector('#upload-file').innerHTML = '';
-  document.removeEventListener('keydown', onPopupEscKeydown);
-}
-
-imgUpload.addEventListener('click', () => {
-  openImgUpload();
-});
-
-closeForm.addEventListener('click', closeImgUpload);
-
-submit.addEventListener('submit', (evt) => {
-  evt.preventDefault();
-  pristine.validate();
-});
-
-export {imgUpload, closeForm};
+pristine.addValidator(
+  textHashtagsInput,
+  validateHashtagFormat,
+  'Формат: #hashtag, длина не более 20 символов. Хэштеги разделены пробелами'
+);
