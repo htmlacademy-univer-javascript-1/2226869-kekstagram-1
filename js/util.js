@@ -1,37 +1,51 @@
-const ALERT_SHOW_TIME = 5000;
+const TIME_DELAY = 500;
 
-const getRandomPositiveInteger = (a, b) => {
-  const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
-  const upper = Math.floor(Math.max(Math.abs(a), Math.abs(b)));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
+const debounce = (callback) => {
+  let timeoutId;
+  return (...rest) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => callback.apply(this, rest), TIME_DELAY);
+  };
 };
 
 const checkMaxLength = (string, maxLen) => string.length <= maxLen;
 
-const getRandomArrayElement = (elements) => elements[getRandomPositiveInteger(0, elements.length - 1)];
 
 const isEscapeKey = (evt) => evt.key === 'Escape';
 
-const showAlert = (message) => {
-  const alertContainer = document.createElement('div');
-  alertContainer.style.zIndex = '100';
-  alertContainer.style.position = 'absolute';
-  alertContainer.style.left = '0';
-  alertContainer.style.top = '0';
-  alertContainer.style.right = '0';
-  alertContainer.style.padding = '10px 3px';
-  alertContainer.style.fontSize = '30px';
-  alertContainer.style.textAlign = 'center';
-  alertContainer.style.backgroundColor = 'red';
+function getRandomNumber (a, b) {
+  const lower = Math.ceil(Math.min(Math.abs(a), Math.abs(b)));
+  const upper = Math.floor(Math.max(Math.abs(a), Math.abs(b)));
+  return Math.floor(Math.random() * (upper - lower + 1) + lower);
+}
 
-  alertContainer.textContent = message;
-
-  document.body.append(alertContainer);
-
-  setTimeout(() => {
-    alertContainer.remove();
-  }, ALERT_SHOW_TIME);
+const getRandomElements = (array, elementsCount) => {
+  const elementNumbers = [];
+  const randomArray = [];
+  for(let i = 0; i < array.length; i++){
+    const number = getRandomNumber(0, array.length - 1);
+    if(elementNumbers.indexOf(number) === -1){
+      randomArray.push(array[number]);
+      elementNumbers.push(number);
+    }
+    if(randomArray.length === elementsCount){
+      break;
+    }
+  }
+  return randomArray;
+};
+const onFail = () => {
+  const messageAlert = document.createElement('div');
+  messageAlert.style.position = 'absolute';
+  messageAlert.style.left = 0;
+  messageAlert.style.top = 0;
+  messageAlert.style.right = 0;
+  messageAlert.style.textAlign = 'center';
+  messageAlert.style.fontSize = '30px';
+  messageAlert.style.backgroundColor = 'red';
+  messageAlert.style.padding = '10px 5px';
+  messageAlert.textContent = 'Ошибка загрузки данных';
+  document.body.append(messageAlert);
 };
 
 export const openModal = (modal, parent) => {
@@ -45,10 +59,10 @@ export const closeModal = (modal, parent) => {
 };
 
 export {
-  getRandomPositiveInteger,
   checkMaxLength,
-  getRandomArrayElement,
   isEscapeKey,
-  showAlert
+  getRandomElements,
+  debounce,
+  onFail
 };
 

@@ -19,4 +19,11 @@ function drawThumbnails(photos) {
   });
 }
 
-export {drawThumbnails};
+function clearPhotos(){
+  const oldPictures = pictureContainer.querySelectorAll('.picture');
+  oldPictures.forEach((picture) => {
+    picture.remove();
+  });
+}
+
+export {drawThumbnails, clearPhotos};
