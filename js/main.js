@@ -3,6 +3,7 @@ import './bigPicture.js';
 import './validetion.js';
 import './loaderForm.js';
 import './addEffect.js';
+import './userPicture.js';
 import {drawThumbnails} from './drawThumbnails.js';
 import {onFail} from './util.js';
 import {getData} from './api.js';
